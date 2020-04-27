@@ -255,7 +255,13 @@ module.exports = function (options) {
         var uploadedBytes = 0;
         var highWaterMark = stream.highWaterMark || (16 * 1000);
         
-        file.pipe(stream); // start upload
+        // start upload
+        
+        if ( file.isStream() ) {
+            file.contents.pipe( stream );
+        } else if ( file.isBuffer() ) {
+            stream.end( file.contents );
+        }           
         
         stream.on('drain', function () {
           uploadedBytes += highWaterMark;
